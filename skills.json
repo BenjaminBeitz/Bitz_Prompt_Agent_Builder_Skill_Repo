@@ -1,0 +1,7 @@
+{
+  "entries": [
+    { "path": "skills/01-prompt-engineering" },
+    { "path": "skills/02-agent-builder" },
+    { "path": "skills" }
+  ]
+}

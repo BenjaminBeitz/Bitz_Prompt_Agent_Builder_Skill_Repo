@@ -1,0 +1,125 @@
+# ==============================================================================
+# SECRETS, CREDENTIALS & ENVIRONMENT (CRITICAL SECURITY)
+# ==============================================================================
+.env
+.env.*
+*.env
+*.local
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*.keystore
+*.jks
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+credentials.json
+client_secret*.json
+service-account*.json
+token.json
+google-services.json
+GoogleService-Info.plist
+
+# ==============================================================================
+# RUNTIME AGENT TELEMETRY, LOGS & SCRATCH (STAGE 1 & 2 DELIVERABLES)
+# ==============================================================================
+.agents/logs/
+.agents/reports/
+.agents/backup/
+.agents/scratch/
+.agents/drafts/
+agent-opportunity-report.html
+day1_verification.md
+live_trace_telemetry.json
+
+# ==============================================================================
+# ANTIGRAVITY BRAIN, LOGS & TRANSCRIPTS
+# ==============================================================================
+brain/
+*.log
+transcript.jsonl
+transcript_full.jsonl
+.system_generated/
+*.tmp
+*.temp
+*.bak
+
+# ==============================================================================
+# PYTHON BYTECODE & VIRTUAL ENVIRONMENTS
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==============================================================================
+# NODE / NPM / JS RUNTIME
+# ==============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ==============================================================================
+# OPERATING SYSTEMS & EDITORS
+# ==============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+
+# IDEs
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.swp
+*.swo
+*.sublime-workspace
+.history/

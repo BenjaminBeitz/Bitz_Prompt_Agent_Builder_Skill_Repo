@@ -1,0 +1,78 @@
+# Oracle Open Agent Specification
+# Archetype Reference Example: Autonomous Sentinel / Daemon
+schema_version: "2.0.0"
+
+agent:
+  name: "uptime-sentinel-daemon"
+  version: "1.0.0"
+  description: "Continuously monitors staging environment web endpoints and user login journeys on a scheduled interval, capturing DOM snapshots upon failure."
+  archetype: "autonomous-sentinel"
+  runtime: "standalone-daemon"
+
+triage:
+  paradigm: "autonomous-loop"
+  justification: "Requires scheduled background execution, browser journey orchestration, and crash-proof transaction state journaling."
+
+lifecycle:
+  max_iterations: 100
+  poll_interval_sec: 300
+  worker_turn_timeout_ms: 15000
+  recurrence_depth_limit: 1
+  concurrency_limit: 1
+  debate_turn_ceiling: 0
+
+memory:
+  working_buffer_ratio: 0.30
+  compaction_threshold: 0.70
+  reasoning_headroom_ratio: 0.20
+  state_journal: ".agents/state/sentinel_events.jsonl"
+  dead_letter_queue: ".agents/dead_letter/"
+  domain_grounding:
+    context_file: "CONTEXT.md"
+    strict_vocabulary: true
+
+action_space:
+  decouple_internal_actions: true
+  max_active_tools: 3
+  payload_armor_bytes: 16384
+  dom_snapshot_max_chars: 50000
+
+tools:
+  - name: "run_command"
+    type: "native"
+    blast_radius: "read-only"
+    description: "Execute curl network probes"
+  - name: "agent-browser"
+    type: "plugin-mcp"
+    blast_radius: "external"
+    description: "Automate browser navigation, DOM snapshots, and screenshots"
+  - name: "ask_human"
+    type: "primitive"
+    blast_radius: "internal"
+    description: "Alert human engineer upon persistent endpoint outage"
+
+safeguards:
+  economic_circuit_breaker:
+    max_tokens_daily: 100000
+    max_estimated_cost_usd_daily: 0.50
+    yield_file: ".budget_exceeded.json"
+  safety_interceptor:
+    prohibited_patterns:
+      - "rm\\s+-rf"
+      - "curl\\s+.*-X\\s+DELETE"
+    credential_redaction: true
+    dry_run_support: true
+  fault_tolerance:
+    signal_trap: "SIGTERM"
+    grace_period_ms: 2000
+    poison_pill_quarantine_strikes: 3
+
+verification:
+  evaluator_optimizer_gate: true
+  pre_flight_health_check: ".agents/agents/uptime-sentinel-daemon/runner.py --health"
+  mock_fixtures: ".agents/tests/uptime-sentinel-daemon-fixtures.json"
+
+fired_conditions:
+  - "Never execute load testing or volumetric denial-of-service pings."
+  - "Never log plaintext passwords or session cookies in incident reports."
+  - "Never attempt automated server restarts without explicit human escalation."

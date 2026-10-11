@@ -1,0 +1,83 @@
+# Oracle Open Agent Specification
+# Archetype Reference Example: Solo Tool-User
+schema_version: "2.0.0"
+
+agent:
+  name: "db-migration-auditor"
+  version: "1.0.0"
+  description: "Autonomously analyzes and validates SQL database schema migrations in PRs for down-migration rollback parity and zero-downtime lock risks."
+  archetype: "solo-tool-user"
+  runtime: "antigravity-2.0"
+
+triage:
+  paradigm: "autonomous-loop"
+  justification: "Requires dynamic schema AST parsing, migration dependency traversal, and lock-risk matrix evaluation."
+
+lifecycle:
+  max_iterations: 8
+  worker_turn_timeout_ms: 30000
+  recurrence_depth_limit: 1
+  concurrency_limit: 1
+  debate_turn_ceiling: 0
+
+memory:
+  working_buffer_ratio: 0.30
+  compaction_threshold: 0.70
+  reasoning_headroom_ratio: 0.20
+  episodic_recall: true
+  goal_pinning: true
+  domain_grounding:
+    context_file: "CONTEXT.md"
+    strict_vocabulary: true
+
+action_space:
+  decouple_internal_actions: true
+  max_active_tools: 3
+  payload_armor_bytes: 16384
+  non_interactive_shell:
+    ci: true
+    pager: "cat"
+    stdin_null: true
+
+tools:
+  - name: "view_file"
+    type: "native"
+    blast_radius: "read-only"
+    description: "Read SQL migration files in migrations/ and schema/"
+  - name: "run_command"
+    type: "native"
+    blast_radius: "read-only"
+    description: "Run git diff and sqlfluff linter"
+  - name: "ask_human"
+    type: "primitive"
+    blast_radius: "internal"
+    description: "Pause and prompt engineer when migration intent is ambiguous"
+
+safeguards:
+  economic_circuit_breaker:
+    max_tokens: 150000
+    max_estimated_cost_usd: 1.00
+    yield_file: ".budget_exceeded.json"
+  safety_interceptor:
+    prohibited_patterns:
+      - "rm\\s+-rf"
+      - "git\\s+push\\s+.*--force"
+      - "drop\\s+database"
+      - "psql\\s+-h\\s+prod"
+    credential_redaction: true
+    dry_run_support: true
+  fault_tolerance:
+    reflexion_strikes_max: 3
+    git_working_tree_rollback: true
+    pending_action_ttl_hours: 24
+
+verification:
+  evaluator_optimizer_gate: true
+  day_one_probe: ".agents/tests/db-migration-auditor-probe.md"
+  regression_suite: ".agents/tests/db-migration-auditor_suite.jsonl"
+  mock_fixtures: ".agents/tests/db-migration-auditor-fixtures.json"
+
+fired_conditions:
+  - "Never execute live SQL against production or staging databases."
+  - "Never approve a migration dropping columns/tables without explicit deprecation warnings."
+  - "Never commit changes to git without passing local syntax checks."

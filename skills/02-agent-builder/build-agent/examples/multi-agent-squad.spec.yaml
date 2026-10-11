@@ -1,0 +1,99 @@
+# Oracle Open Agent Specification
+# Archetype Reference Example: Multi-Agent Squad
+schema_version: "2.0.0"
+
+agent:
+  name: "security-review-squad"
+  version: "1.0.0"
+  description: "Adversarial multi-agent security review squad auditing authentication flaws, dependency CVEs, secret leaks, and OWASP Top 10 vulnerabilities."
+  archetype: "multi-agent-squad"
+  runtime: "antigravity-2.0"
+
+triage:
+  paradigm: "autonomous-loop"
+  justification: "Requires division of labor across static AST scanning, CVE database correlation, and adversarial debate to eliminate false positives."
+
+lifecycle:
+  max_iterations: 10
+  worker_turn_timeout_ms: 60000
+  recurrence_depth_limit: 2
+  concurrency_limit: 2
+  debate_turn_ceiling: 2
+
+team:
+  lead:
+    role: "SecurityLead"
+    model_tier: "pro"
+    workspace: "inherit"
+  workers:
+    - role: "StaticAuditor"
+      model_tier: "flash"
+      workspace: "branch"
+    - role: "DependencyAuditor"
+      model_tier: "flash"
+      workspace: "branch"
+
+memory:
+  working_buffer_ratio: 0.30
+  compaction_threshold: 0.70
+  reasoning_headroom_ratio: 0.20
+  episodic_recall: true
+  goal_pinning: true
+  domain_grounding:
+    context_file: "CONTEXT.md"
+    strict_vocabulary: true
+
+action_space:
+  decouple_internal_actions: true
+  max_active_tools: 4
+  payload_armor_bytes: 16384
+  non_interactive_shell:
+    ci: true
+    pager: "cat"
+    stdin_null: true
+
+tools:
+  - name: "view_file"
+    type: "native"
+    blast_radius: "read-only"
+    description: "Read repository source code"
+  - name: "run_command"
+    type: "native"
+    blast_radius: "read-only"
+    description: "Execute semgrep and npm audit in read-only mode"
+  - name: "send_message"
+    type: "native"
+    blast_radius: "internal"
+    description: "Inter-agent task delegation and report artifact notifications"
+  - name: "ask_human"
+    type: "primitive"
+    blast_radius: "internal"
+    description: "Prompt human when vulnerability severity is contested"
+
+safeguards:
+  economic_circuit_breaker:
+    max_tokens: 250000
+    max_estimated_cost_usd: 2.00
+    yield_file: ".budget_exceeded.json"
+  safety_interceptor:
+    prohibited_patterns:
+      - "rm\\s+-rf"
+      - "git\\s+push\\s+.*--force"
+      - "npx\\s+"
+    credential_redaction: true
+    dry_run_support: true
+  fault_tolerance:
+    reflexion_strikes_max: 3
+    git_working_tree_rollback: true
+    pending_action_ttl_hours: 24
+
+verification:
+  evaluator_optimizer_gate: true
+  day_one_probe: ".agents/tests/security-review-squad-probe.md"
+  regression_suite: ".agents/tests/security-review-squad_suite.jsonl"
+  mock_fixtures: ".agents/tests/security-review-squad-fixtures.json"
+
+fired_conditions:
+  - "Never execute live exploits against remote endpoints."
+  - "Never output un-redacted credentials or secret keys."
+  - "Never approve pull requests containing un-exempted Critical CVEs."

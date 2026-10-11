@@ -1,0 +1,80 @@
+# Oracle Open Agent Specification (agent-spec compliant)
+# Schema: https://github.com/oracle/agent-spec / https://agentprotocol.ai
+schema_version: "2.0.0"
+
+agent:
+  name: "{{AGENT_NAME}}"
+  version: "1.0.0"
+  description: "{{DESCRIPTION}}"
+  archetype: "{{ARCHETYPE}}" # solo-tool-user | multi-agent-squad | autonomous-sentinel
+  runtime: "antigravity-2.0"
+
+triage:
+  paradigm: "{{EXECUTION_PARADIGM}}" # workflow-dag | autonomous-loop
+  justification: "{{TRIAGE_JUSTIFICATION}}"
+
+lifecycle:
+  max_iterations: "{{MAX_STEPS}}"
+  worker_turn_timeout_ms: "{{WORKER_TIMEOUT_MS}}"
+  recurrence_depth_limit: 2
+  concurrency_limit: "{{MAX_CONCURRENCY}}"
+  debate_turn_ceiling: "{{MAX_DEBATE_ROUNDS}}"
+
+memory:
+  working_buffer_ratio: 0.30
+  compaction_threshold: 0.70
+  reasoning_headroom_ratio: 0.20
+  episodic_recall: true
+  goal_pinning: true
+  domain_grounding:
+    context_file: "CONTEXT.md"
+    strict_vocabulary: true
+
+action_space:
+  decouple_internal_actions: true
+  max_active_tools: 8
+  payload_armor_bytes: 16384
+  non_interactive_shell:
+    ci: true
+    pager: "cat"
+    stdin_null: true
+
+tools:
+  - name: "ask_human"
+    type: "primitive"
+    blast_radius: "internal"
+    description: "Pause and prompt human when input is ambiguous or requires steering"
+  # Dynamic tools injected below (Max 8)
+  # - name: "{{TOOL_NAME}}"
+  #   type: "native | mcp | custom"
+  #   blast_radius: "read-only | workspace-write | external-mutate"
+  #   permissions:
+  #     allowed_paths: ["{{ALLOWED_PATH}}"]
+
+safeguards:
+  economic_circuit_breaker:
+    max_tokens: 250000
+    max_estimated_cost_usd: 2.00
+    yield_file: ".budget_exceeded.json"
+  safety_interceptor:
+    prohibited_patterns:
+      - "rm\\s+-rf"
+      - "git\\s+push\\s+.*--force"
+      - "drop\\s+database"
+    credential_redaction: true
+    dry_run_support: true
+  fault_tolerance:
+    reflexion_strikes_max: 3
+    git_working_tree_rollback: true
+    pending_action_ttl_hours: 24
+
+verification:
+  evaluator_optimizer_gate: true
+  day_one_probe: ".agents/tests/{{AGENT_NAME}}-probe.md"
+  regression_suite: ".agents/tests/{{AGENT_NAME}}_suite.jsonl"
+  mock_fixtures: ".agents/tests/{{AGENT_NAME}}-fixtures.json"
+
+fired_conditions:
+  - "{{HARD_REFUSAL_1}}"
+  - "{{HARD_REFUSAL_2}}"
+  - "{{HARD_REFUSAL_3}}"
